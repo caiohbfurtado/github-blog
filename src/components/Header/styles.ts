@@ -6,6 +6,7 @@ export const HeaderContainer = styled.div`
   background-image: url(${headerBackgroundImage});
   background-size: cover;
   background-repeat: no-repeat;
+  background-position-x: center;
   background-position-y: center;
   height: 296px;
   width: 100%;
