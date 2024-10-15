@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {
   HomeContainer,
   HomeContent,
@@ -5,61 +6,86 @@ import {
   SearchWrapper,
 } from './styles'
 
+import { useForm } from 'react-hook-form'
+
 import { Card } from '../../components/Card'
 import { ProfileCard } from './components/ProfileCard'
+import { api } from '../../lib/api'
+import { useEffect, useState } from 'react'
+
+export type ArticleProps = {
+  body: string
+  created_at: string
+  id: number
+  html_url: string
+  title: string
+  number: number
+  comments: number
+  user: {
+    login: string
+  }
+}
+
+type SearchForm = {
+  query: string
+}
 
 export function Home() {
+  const [issues, setIssues] = useState<ArticleProps[]>([])
+  const { register, handleSubmit } = useForm<SearchForm>()
+
+  async function getIssues() {
+    const { data } = await api.get(
+      'https://api.github.com/search/issues?q=%20repo:rocketseat-education/reactjs-github-blog-challenge',
+    )
+
+    const items: ArticleProps[] = data.items
+
+    setIssues(items)
+  }
+
+  useEffect(() => {
+    getIssues()
+  }, [])
+
+  async function onSubmit({ query }: SearchForm) {
+    const { data } = await api.get(
+      `https://api.github.com/search/issues?q=${query}%20repo:rocketseat-education/reactjs-github-blog-challenge`,
+    )
+
+    const items: ArticleProps[] = data.items
+
+    setIssues(items)
+  }
+
   return (
     <HomeContainer>
       <ProfileCard />
 
       <HomeContent>
-        <SearchWrapper>
+        <SearchWrapper onSubmit={handleSubmit(onSubmit)}>
           <header>
             <h2>Publicações</h2>
-            <span>6 publicações</span>
+            <span>{issues.length} publicações</span>
           </header>
 
-          <input type="text" placeholder="Buscar conteúdo" />
+          <input
+            {...register('query')}
+            type="text"
+            placeholder="Buscar conteúdo"
+          />
         </SearchWrapper>
 
         <PublicationsWrapper>
-          <Card
-            title="JavaScript data types and data structures"
-            createdAt="Há 1 dia"
-            content="Programming languages all have built-in data structures, but these often differ from one language to another. This article attempts to list the built-in data structures available in JavaScript and what properties they have. These can be used to build other data structures. Wherever possible, comparisons with other languages are drawn.
-
-            Dynamic typing
-            JavaScript is a loosely typed and dynamic language. Variables in JavaScript are not directly associated with any particular value type, and any variable can be assigned (and re-assigned) values of all types:
-
-            let foo = 42; // foo is now a number
-            foo = 'bar'; // foo is now a string
-            foo = true; // foo is now a boolean"
-          />
-          <Card
-            title="JavaScript data types and data structures"
-            createdAt="Há 1 dia"
-            content="Programming languages all have built-in data structures, but these often differ from one language to another. This article attempts to list the built-in data structures available in JavaScript and what properties they have. These can be used to build other data structures. Wherever possible, comparisons with other languages are drawn.
-
-            Dynamic typing
-            JavaScript is a loosely typed and dynamic language. Variables in JavaScript are not directly associated with any particular value type, and any variable can be assigned (and re-assigned) values of all types:
-
-            let foo = 42; // foo is now a number
-            foo = 'bar'; // foo is now a string
-            foo = true; // foo is now a boolean"
-          />
-          <Card
-            title="JavaScript data types and data structures"
-            createdAt="Há 1 dia"
-            content="Programming languages all have built-in data structures, but these often differ from one language to another. This article attempts to list the built-in data structures available in JavaScript and what properties they have. These can be used to build other data structures. Wherever possible, comparisons with other languages are drawn.
-
-            Dynamic typing
-            JavaScript is a loosely typed and dynamic language. Variables in JavaScript are not directly associated with any particular value type, and any variable can be assigned (and re-assigned) values of all types:
-
-            let foo = 42; // foo is now a number
-            foo = 'bar'; // foo is now a string
-            foo = true; // foo is now a boolean"
-          />
+          {issues.map(({ body, created_at, id, title, number }) => (
+            <Card
+              key={id}
+              title={title}
+              createdAt={created_at}
+              content={body}
+              id={number}
+            />
+          ))}
         </PublicationsWrapper>
       </HomeContent>
     </HomeContainer>

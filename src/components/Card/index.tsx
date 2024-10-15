@@ -4,17 +4,18 @@ type CardProps = {
   title: string
   createdAt: string
   content: string
+  id: number
 }
 
-export function Card({ content, createdAt, title }: CardProps) {
+export function Card({ content, createdAt, title, id }: CardProps) {
   return (
-    <CardWrapper>
+    <CardWrapper to={`/issues/${id}`}>
       <header>
         <h3>{title}</h3>
         <span>{createdAt}</span>
       </header>
 
-      <p>{content}</p>
+      {content && <p>{content}</p>}
     </CardWrapper>
   )
 }

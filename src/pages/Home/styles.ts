@@ -14,7 +14,7 @@ export const HomeContent = styled.div`
   margin-top: 4.5rem;
 `
 
-export const SearchWrapper = styled.div`
+export const SearchWrapper = styled.form`
   header {
     display: flex;
     width: 100%;
@@ -56,7 +56,7 @@ export const SearchWrapper = styled.div`
 
 export const PublicationsWrapper = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 34rem);
   gap: 2rem;
   margin-top: 3rem;
 `
